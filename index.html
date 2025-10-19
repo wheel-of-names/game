@@ -236,9 +236,9 @@
 <script>
 let names = [];
 const riggedWinners = [
-  "COMMONWEALTH","HOLY SPIRIT","PAYATAS","FAIRVIEW","BAGONG SILANGAN",
-  "BATASAN HILLS","MATANDANG BALARA","NORTH FAIRVIEW",
-  "PASONG PUTIK PROPER","SAN AGUSTIN","NOVALICHES PROPER","GULOD"
+  "BATASAN HILLS", "PAYATAS", "COMMONWEALTH", "MARILAG", "MILAGROSA",
+  "WEST KAMIAS", "U.P. VILLAGE", "KAMUNING", "GREATER LAGRO", "NOVALICHES PROPER",
+  "GULOD", "NAGKAISANG NAYON"
 ];
 
 const canvas = document.getElementById("wheel");
@@ -377,9 +377,9 @@ resetGame.addEventListener("click", () => {
     resetGame.style.display = "none";
     spinContainer.style.display = "none";
     riggedWinners.splice(0, riggedWinners.length,
-      "COMMONWEALTH","HOLY SPIRIT","PAYATAS","FAIRVIEW","BAGONG SILANGAN",
-      "BATASAN HILLS","MATANDANG BALARA","NORTH FAIRVIEW",
-      "PASONG PUTIK PROPER","SAN AGUSTIN","NOVALICHES PROPER","GULOD"
+      "BATASAN HILLS", "PAYATAS", "COMMONWEALTH", "MARILAG", "MILAGROSA",
+	  "WEST KAMIAS", "U.P. VILLAGE", "KAMUNING", "GREATER LAGRO", "NOVALICHES PROPER",
+	  "GULOD", "NAGKAISANG NAYON"
     );
     drawWheel(true);
   }
