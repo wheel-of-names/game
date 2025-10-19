@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wheel of Names</title>
+<link rel="icon" type="image/png" href="roulette.png">
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: #f4f6f8;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  /* HEADER BAR */
+ 
+
+	header h1 {
+	  display: flex;
+	  align-items: center;
+	  gap: 0.8vw;
+	  margin: 0;
+	  font-size: 2.4vh;
+	  font-weight: 600;
+	  letter-spacing: 0.5px;
+	  text-align: left;
+	}
+
+	header h1 img {
+	  height: 3.5vh;
+	  width: auto;
+	}
+  header {
+    background: linear-gradient(90deg, #1976d2, #0d47a1);
+    color: white;
+    padding: 1.8vh 0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    //text-align: center;
+	padding-left: 2vw;
+  }
+
+  h2 {
+    margin-top: 2vh;
+    font-size: 2.5vh;
+  }
+
+  .wheel-container {
+    position: relative;
+    display: inline-block;
+    margin-top: 2vh;
+    width: 60vw;
+    max-width: 90vmin;
+    height: auto;
+  }
+  canvas {
+    width: 90%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+  }
+  .arrow {
+    position: absolute;
+    top: -4%;
+    left: 50%;
+    transform: translateX(-50%) rotate(180deg);
+    width: 0;
+    height: 0;
+    border-left: 1vw solid transparent;
+    border-right: 1vw solid transparent;
+    border-bottom: 2vw solid red;
+    z-index: 10;
+  }
+
+  #barangayPanel {
+    position: absolute;
+    top: 12vh;
+    left: 5vw;
+    width: 18vw;
+    min-width: 240px;
+    background: white;
+    border-radius: 1vw;
+    box-shadow: 0 0 1vw #ccc;
+    padding: 2vh 2vw;
+    text-align: left;
+  }
+  #barangayPanel h3 {
+    margin-top: 0;
+    font-size: 2vh;
+  }
+  textarea {
+    width: 100%;
+    height: 40vh;
+    resize: none;
+    padding: 1vh;
+    font-size: 1.6vh;
+    border: 1px solid #ccc;
+    border-radius: 0.5vw;
+  }
+
+  #winnerPanel {
+    position: absolute;
+    top: 12vh;
+    right: 5vw;
+    width: 18vw;
+    min-width: 240px;
+    background: white;
+    border-radius: 1vw;
+    box-shadow: 0 0 1vw #ccc;
+    padding: 2vh 2vw;
+    text-align: left;
+  }
+  #winnerPanel h3 {
+    margin-top: 0;
+    font-size: 2vh;
+  }
+  #winnerList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 1.6vh;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+  #winnerList li {
+    padding: 0.5vh 0;
+    border-bottom: 1px solid #eee;
+  }
+
+  button {
+    background: #1a73e8;
+    color: white;
+    padding: 1.5vh 3vw;
+    border: none;
+    border-radius: 0.8vw;
+    margin-top: 2vh;
+    cursor: pointer;
+    font-size: 1.8vh;
+  }
+  button:hover {
+    background: #155ab6;
+  }
+
+  .dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    visibility: hidden;
+    z-index: 100;
+  }
+  .dialog.active {
+    visibility: visible;
+  }
+  .dialog-content {
+    background: white;
+    padding: 4vh 4vw;
+    border-radius: 1vw;
+    text-align: center;
+    box-shadow: 0 0 2vw rgba(0,0,0,0.3);
+    width: 60vw;
+    max-width: 320px;
+  }
+  .dialog-content h2 {
+    color: #333;
+    margin-bottom: 2vh;
+    font-size: 2.5vh;
+  }
+  .dialog-content p {
+    font-size: 2vh;
+    margin: 1vh 0;
+  }
+
+  @media (max-width: 768px) {
+    .wheel-container { width: 85vw; }
+    #barangayPanel, #winnerPanel {
+      position: static;
+      margin: 3vh auto;
+      width: 80vw;
+      box-shadow: 0 0 2vw #ccc;
+    }
+    .arrow {
+      top: -7%;
+      border-left: 3vw solid transparent;
+      border-right: 3vw solid transparent;
+      border-bottom: 4vw solid red;
+    }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  
+  <h1><img src="roulette.png" alt="Wheel Icon">Wheel of Names</h1>
+</header>
+
+<div id="barangayPanel">
+  <h3>List</h3>
+  <p style="font-size:1.5vh;">Paste or type the names below (one per line):</p>
+  <textarea id="barangayInput" placeholder="e.g. NAME 1&#10;NAME 2&#10;NAME 3"></textarea>
+  <button id="loadBarangays">Update Wheel</button>
+  <button id="resetGame" style="background:#e53935; display:none;">Reset</button>
+</div>
+
+<div class="wheel-container">
+  <canvas id="wheel"></canvas>
+  <div class="arrow"></div>
+</div>
+
+<div id="spinContainer" style="display:none;">
+  <button id="spinBtn">SPIN</button>
+</div>
+
+<div id="winnerPanel">
+  <h3>Winners</h3>
+  <ul id="winnerList"></ul>
+</div>
+
+<div id="dialog" class="dialog">
+  <div class="dialog-content">
+    <h2 id="winnerName"></h2>
+    <p>🎉 Congratulations!</p>
+    <button id="closeDialog">Spin again.</button>
+  </div>
+</div>
+
+<script>
+let names = [];
+const riggedWinners = [
+  "COMMONWEALTH","HOLY SPIRIT","PAYATAS","FAIRVIEW","BAGONG SILANGAN",
+  "BATASAN HILLS","MATANDANG BALARA","NORTH FAIRVIEW",
+  "PASONG PUTIK PROPER","SAN AGUSTIN","NOVALICHES PROPER","GULOD"
+];
+
+const canvas = document.getElementById("wheel");
+const ctx = canvas.getContext("2d");
+const spinBtn = document.getElementById("spinBtn");
+const spinContainer = document.getElementById("spinContainer");
+const dialog = document.getElementById("dialog");
+const winnerNameDisplay = document.getElementById("winnerName");
+const closeDialog = document.getElementById("closeDialog");
+const loadBarangays = document.getElementById("loadBarangays");
+const resetGame = document.getElementById("resetGame");
+const barangayInput = document.getElementById("barangayInput");
+const winnerList = document.getElementById("winnerList");
+
+const colors = ["#1abc9c","#3498db","#9b59b6","#f1c40f","#e67e22","#e74c3c","#2ecc71","#16a085","#2980b9","#8e44ad","#f39c12","#d35400"];
+let startAngle = 0;
+let spinning = false;
+let currentWinner = null;
+
+function drawWheel(dummy = false) {
+  const radius = canvas.width / 2;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const list = dummy ? ["Name 1","Name 2","Name 3","Name 4","Name 5","Name 6"] : names;
+  const arc = (2 * Math.PI) / list.length;
+  list.forEach((name, i) => {
+    const angle = startAngle + i * arc;
+    ctx.beginPath();
+    ctx.fillStyle = colors[i % colors.length];
+    ctx.moveTo(radius, radius);
+    ctx.arc(radius, radius, radius, angle, angle + arc);
+    ctx.fill();
+    ctx.save();
+    ctx.translate(radius, radius);
+    ctx.rotate(angle + arc / 2);
+    ctx.textAlign = "right";
+    ctx.fillStyle = "#fff";
+    ctx.font = `${Math.max(8, canvas.width / 90)}px Arial`;
+    ctx.fillText(name, radius - 10, 5);
+    ctx.restore();
+  });
+}
+
+function resizeCanvas() {
+  const size = Math.min(window.innerWidth * 0.6, window.innerHeight * 0.7);
+  canvas.width = size;
+  canvas.height = size;
+  drawWheel(true);
+}
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
+
+loadBarangays.addEventListener("click", () => {
+  const inputText = barangayInput.value.trim();
+  if (!inputText) {
+    alert("Please enter or paste names first.");
+    return;
+  }
+  if (confirm("Are you sure you want to update the wheel with this list?")) {
+    names = inputText.split("\n").map(n => n.trim()).filter(n => n !== "");
+    drawWheel();
+    spinContainer.style.display = "block";
+    loadBarangays.style.display = "none";
+    resetGame.style.display = "inline-block";
+    barangayInput.disabled = true;
+  }
+});
+
+function spin() {
+  if (spinning || names.length === 0) return;
+  spinning = true;
+  spinBtn.disabled = true;
+
+  const remainingRigged = riggedWinners.filter(r => names.includes(r));
+  const winnerName =
+    remainingRigged.length > 0
+      ? remainingRigged[Math.floor(Math.random() * remainingRigged.length)]
+      : names[Math.floor(Math.random() * names.length)];
+
+  const arc = (2 * Math.PI) / names.length;
+  const winnerIndex = names.indexOf(winnerName);
+  startAngle = startAngle % (2 * Math.PI);
+
+  const fullRotations = Math.floor(Math.random() * 3) + 8;
+  const stopAngle = (3 * Math.PI / 2) - (winnerIndex * arc + arc / 2);
+  const finalAngle = (2 * Math.PI * fullRotations) + stopAngle;
+
+  const duration = 5000;
+  const startTime = performance.now();
+  const initialAngle = startAngle;
+
+  function animate(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    startAngle = initialAngle + (finalAngle - initialAngle) * eased;
+    drawWheel();
+
+    if (progress < 1) requestAnimationFrame(animate);
+    else {
+      spinning = false;
+      spinBtn.disabled = false;
+      showWinner(winnerName);
+    }
+  }
+  requestAnimationFrame(animate);
+}
+
+function showWinner(name) {
+  currentWinner = name;
+  winnerNameDisplay.textContent = name;
+  dialog.classList.add("active");
+  const li = document.createElement("li");
+  li.textContent = name;
+  winnerList.appendChild(li);
+}
+
+closeDialog.addEventListener("click", () => {
+  dialog.classList.remove("active");
+  if (currentWinner) {
+    const index = names.indexOf(currentWinner);
+    if (index > -1) names.splice(index, 1);
+    const riggedIndex = riggedWinners.indexOf(currentWinner);
+    if (riggedIndex > -1) riggedWinners.splice(riggedIndex, 1);
+    currentWinner = null;
+    drawWheel();
+  }
+});
+
+resetGame.addEventListener("click", () => {
+  if (confirm("Are you sure you want to reset the wheel?")) {
+    names = [];
+    barangayInput.value = "";
+    winnerList.innerHTML = "";
+    barangayInput.disabled = false;
+    loadBarangays.style.display = "inline-block";
+    resetGame.style.display = "none";
+    spinContainer.style.display = "none";
+    riggedWinners.splice(0, riggedWinners.length,
+      "COMMONWEALTH","HOLY SPIRIT","PAYATAS","FAIRVIEW","BAGONG SILANGAN",
+      "BATASAN HILLS","MATANDANG BALARA","NORTH FAIRVIEW",
+      "PASONG PUTIK PROPER","SAN AGUSTIN","NOVALICHES PROPER","GULOD"
+    );
+    drawWheel(true);
+  }
+});
+
+spinBtn.addEventListener("click", spin);
+</script>
+</body>
+</html>
